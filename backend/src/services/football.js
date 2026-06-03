@@ -1,78 +1,91 @@
 const axios = require('axios');
 const { db } = require('../firebase');
 
-const API_KEY = process.env.API_FOOTBALL_KEY;
-const LEAGUE = process.env.API_FOOTBALL_WC_LEAGUE || '1';
-const SEASON = process.env.API_FOOTBALL_WC_SEASON || '2026';
-const BASE_URL = 'https://v3.football.api-sports.io';
+const API_KEY = process.env.FOOTBALL_DATA_KEY;
+const COMPETITION = process.env.FOOTBALL_DATA_COMPETITION || 'WC';
+const BASE_URL = 'https://api.football-data.org/v4';
 
 const client = axios.create({
   baseURL: BASE_URL,
-  headers: { 'x-apisports-key': API_KEY },
+  headers: { 'X-Auth-Token': API_KEY },
 });
 
-// Fetch fixtures from API-Football and cache in Firestore for 30 min
-async function getFixtures({ round } = {}) {
-  const cacheKey = `fixtures_${round || 'all'}`;
-  const cacheRef = db.collection('_cache').doc(cacheKey);
+function statusMap(status) {
+  switch (status) {
+    case 'FINISHED': return 'FT';
+    case 'IN_PLAY': return '1H';
+    case 'PAUSED': return 'HT';
+    case 'EXTRA_TIME': return 'AET';
+    case 'PENALTY_SHOOTOUT': return 'PEN';
+    default: return 'NS';
+  }
+}
+
+function getRoundLabel(match) {
+  if (match.matchday) return `Matchday ${match.matchday}`;
+  return match.stage || 'Unknown';
+}
+
+function mapMatch(m) {
+  return {
+    id: m.id,
+    date: m.utcDate,
+    status: statusMap(m.status),
+    round: getRoundLabel(m),
+    venue: m.venue || '',
+    city: '',
+    homeTeam: {
+      id: m.homeTeam.id,
+      name: m.homeTeam.name,
+      logo: m.homeTeam.crest,
+    },
+    awayTeam: {
+      id: m.awayTeam.id,
+      name: m.awayTeam.name,
+      logo: m.awayTeam.crest,
+    },
+    score: {
+      home: m.score.fullTime.home,
+      away: m.score.fullTime.away,
+    },
+  };
+}
+
+async function getAllFixtures() {
+  const cacheRef = db.collection('_cache').doc('fixtures_all');
   const cached = await cacheRef.get();
 
   if (cached.exists) {
     const data = cached.data();
-    const age = Date.now() - data.fetchedAt;
-    if (age < 30 * 60 * 1000) {
-      return data.fixtures;
-    }
+    if (Date.now() - data.fetchedAt < 30 * 60 * 1000) return data.fixtures;
   }
 
-  const params = { league: LEAGUE, season: SEASON };
-  if (round) params.round = round;
-
-  const res = await client.get('/fixtures', { params });
-  const fixtures = res.data.response.map(mapFixture);
-
+  const res = await client.get(`/competitions/${COMPETITION}/matches`);
+  const fixtures = res.data.matches.map(mapMatch);
   await cacheRef.set({ fixtures, fetchedAt: Date.now() });
   return fixtures;
 }
 
-// Fetch a single fixture by ID (live score)
+async function getFixtures({ round } = {}) {
+  const fixtures = await getAllFixtures();
+  if (!round) return fixtures;
+  return fixtures.filter(f => f.round === round);
+}
+
 async function getFixtureById(fixtureId) {
-  const res = await client.get('/fixtures', { params: { id: fixtureId } });
-  if (!res.data.response.length) return null;
-  return mapFixture(res.data.response[0]);
+  const res = await client.get(`/matches/${fixtureId}`);
+  if (!res.data) return null;
+  return mapMatch(res.data);
 }
 
-// Get all available rounds
 async function getRounds() {
-  const res = await client.get('/fixtures/rounds', {
-    params: { league: LEAGUE, season: SEASON },
+  const fixtures = await getAllFixtures();
+  const seen = new Set();
+  return fixtures.map(f => f.round).filter(r => {
+    if (seen.has(r)) return false;
+    seen.add(r);
+    return true;
   });
-  return res.data.response;
-}
-
-function mapFixture(f) {
-  return {
-    id: f.fixture.id,
-    date: f.fixture.date,
-    status: f.fixture.status.short, // NS, 1H, HT, 2H, FT, AET, PEN
-    round: f.league.round,
-    venue: f.fixture.venue.name,
-    city: f.fixture.venue.city,
-    homeTeam: {
-      id: f.teams.home.id,
-      name: f.teams.home.name,
-      logo: f.teams.home.logo,
-    },
-    awayTeam: {
-      id: f.teams.away.id,
-      name: f.teams.away.name,
-      logo: f.teams.away.logo,
-    },
-    score: {
-      home: f.goals.home,
-      away: f.goals.away,
-    },
-  };
 }
 
 module.exports = { getFixtures, getFixtureById, getRounds };
