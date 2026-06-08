@@ -6,6 +6,7 @@ import EmailLinkLanding from './pages/EmailLinkLanding';
 import MatchesPage from './pages/MatchesPage';
 import MyTipsPage from './pages/MyTipsPage';
 import LeaderboardPage from './pages/LeaderboardPage';
+import TournamentPage from './pages/TournamentPage';
 
 function RequireAuth({ children }) {
   const user = useAuth();
@@ -23,6 +24,7 @@ export default function App() {
         <Route index element={<Navigate to="/matches" replace />} />
         <Route path="matches" element={<MatchesPage />} />
         <Route path="my-tips" element={<MyTipsPage />} />
+        <Route path="tournament" element={<TournamentPage />} />
         <Route path="leaderboard" element={<LeaderboardPage />} />
       </Route>
     </Routes>

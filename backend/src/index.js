@@ -7,6 +7,7 @@ const matchesRouter = require('./routes/matches');
 const tipsRouter = require('./routes/tips');
 const leaderboardRouter = require('./routes/leaderboard');
 const evaluateRouter = require('./routes/evaluate');
+const tournamentRouter = require('./routes/tournament');
 const { evaluateFinishedMatches } = require('./services/evaluation');
 
 const app = express();
@@ -24,6 +25,7 @@ app.use('/api/matches', matchesRouter);
 app.use('/api/tips', tipsRouter);
 app.use('/api/leaderboard', leaderboardRouter);
 app.use('/api/evaluate', evaluateRouter);
+app.use('/api/tournament', tournamentRouter);
 
 // Auto-evaluate finished matches every 15 minutes
 cron.schedule('*/15 * * * *', async () => {

@@ -42,4 +42,8 @@ export const api = {
     }),
 
   getLeaderboard: () => apiFetch('/api/leaderboard'),
+
+  getTournamentTip: () => apiFetch('/api/tournament/me'),
+  submitTournamentTip: (pick1, pick2, pick3) =>
+    apiFetch('/api/tournament', { method: 'POST', body: JSON.stringify({ pick1, pick2, pick3 }) }),
 };
