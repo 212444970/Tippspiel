@@ -57,7 +57,7 @@ export default function MatchesPage() {
         <span>⚽ Exact score <strong style={{ color: 'var(--text)' }}>7 pts</strong></span>
         <span>✅ Correct tendency <strong style={{ color: 'var(--text)' }}>4 pts</strong></span>
         <span>+1 per correct team goal count</span>
-        <span>🌍 Tournament picks <strong style={{ color: 'var(--text)' }}>up to 70 pts</strong></span>
+        <span>🌍 Tournament: Winner <strong style={{ color: 'var(--text)' }}>20</strong> · Finalist <strong style={{ color: 'var(--text)' }}>12</strong> · Top 3 <strong style={{ color: 'var(--text)' }}>8</strong> · Exact rank <strong style={{ color: 'var(--text)' }}>+10</strong> per pick</span>
       </div>
 
       {upcomingCount > 0 && (
