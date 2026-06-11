@@ -65,6 +65,7 @@ export default function LeaderboardPage() {
               </div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
                 {entry.tipsEvaluated} tips evaluated
+                {entry.tournamentPoints > 0 && ` · 🌍 ${entry.tournamentPoints} tournament`}
               </div>
             </div>
             <div style={{ textAlign: 'right', flexShrink: 0 }}>

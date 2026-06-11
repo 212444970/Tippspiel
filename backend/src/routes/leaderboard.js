@@ -25,6 +25,7 @@ router.get('/', async (req, res) => {
         exactScores,
         correctWinners,
         accuracy,
+        tournamentPoints: d.tournamentPoints || 0,
       };
     });
 

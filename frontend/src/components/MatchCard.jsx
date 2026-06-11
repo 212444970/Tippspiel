@@ -62,7 +62,12 @@ export default function MatchCard({ match, existingTip, onTipSaved }) {
 
   const resultBadge = () => {
     if (!existingTip?.evaluated) return null;
-    const map = { exact: ['Exact score', 'var(--success)', 'var(--success-bg)'], correct_winner: ['Correct winner', 'var(--accent)', 'var(--accent-bg)'], wrong: ['Wrong', 'var(--text-muted)', 'var(--border)'] };
+    const map = {
+      exact: ['Exact score', 'var(--success)', 'var(--success-bg)'],
+      correct_winner: ['Correct tendency', 'var(--accent)', 'var(--accent-bg)'],
+      goal_bonus: ['Goal bonus', 'var(--warning)', 'var(--warning-bg)'],
+      wrong: ['Wrong', 'var(--text-muted)', 'var(--border)'],
+    };
     const [label, color, bg] = map[existingTip.result] || map.wrong;
     return <span style={{ fontSize: 12, padding: '3px 8px', borderRadius: 4, background: bg, color }}>{label} · {existingTip.points} pts</span>;
   };

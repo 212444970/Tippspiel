@@ -83,6 +83,7 @@ router.post('/evaluate', async (req, res) => {
       const userRef = db.collection('users').doc(userId);
       batch.set(userRef, {
         totalPoints: require('firebase-admin').firestore.FieldValue.increment(total),
+        tournamentPoints: require('firebase-admin').firestore.FieldValue.increment(total),
       }, { merge: true });
     });
 

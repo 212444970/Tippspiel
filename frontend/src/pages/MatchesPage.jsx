@@ -53,6 +53,13 @@ export default function MatchesPage() {
         )}
       </div>
 
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '8px 12px', marginBottom: '1rem', fontSize: 12, color: 'var(--text-muted)', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+        <span>⚽ Exact score <strong style={{ color: 'var(--text)' }}>7 pts</strong></span>
+        <span>✅ Correct tendency <strong style={{ color: 'var(--text)' }}>4 pts</strong></span>
+        <span>+1 per correct team goal count</span>
+        <span>🌍 Tournament picks <strong style={{ color: 'var(--text)' }}>up to 70 pts</strong></span>
+      </div>
+
       {upcomingCount > 0 && (
         <div style={{ background: 'var(--warning-bg)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '8px 12px', marginBottom: '1rem', fontSize: 13, color: 'var(--warning)' }}>
           ⏰ {tippedCount}/{upcomingCount} tips submitted for this round
