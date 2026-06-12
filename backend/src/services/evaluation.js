@@ -1,5 +1,5 @@
 const { db } = require('../firebase');
-const { getFixtureById } = require('./football');
+const { getFixtures } = require('./football');
 
 const POINTS_EXACT = 7;
 const POINTS_TENDENCY = 4;
@@ -33,10 +33,15 @@ async function evaluateFinishedMatches() {
     byFixture[tip.fixtureId].push({ id: doc.id, ...tip });
   });
 
+  // Load all fixtures from cache (one API call max) and index by id
+  const allFixtures = await getFixtures();
+  const fixtureMap = {};
+  allFixtures.forEach(f => { fixtureMap[f.id] = f; });
+
   const batch = db.batch();
 
   for (const fixtureId of Object.keys(byFixture)) {
-    const fixture = await getFixtureById(fixtureId);
+    const fixture = fixtureMap[Number(fixtureId)];
     if (!fixture) continue;
     if (!['FT', 'AET', 'PEN'].includes(fixture.status)) continue;
 
