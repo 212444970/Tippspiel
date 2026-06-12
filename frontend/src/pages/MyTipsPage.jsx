@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 
 const RESULT_STYLES = {
-  exact:          { label: 'Exact score',     pts: '+4 pts', color: 'var(--success)',    bg: 'var(--success-bg)' },
-  correct_winner: { label: 'Correct winner',  pts: '+2 pts', color: 'var(--accent)',     bg: 'var(--accent-bg)' },
-  wrong:          { label: 'Wrong',           pts: '+0 pts', color: 'var(--text-muted)', bg: 'var(--border)' },
+  exact:          { label: 'Exact score',       color: 'var(--success)',    bg: 'var(--success-bg)' },
+  correct_winner: { label: 'Correct tendency',  color: 'var(--accent)',     bg: 'var(--accent-bg)' },
+  goal_bonus:     { label: 'Goal bonus',         color: 'var(--warning)',    bg: 'var(--warning-bg)' },
+  wrong:          { label: 'Wrong',             color: 'var(--text-muted)', bg: 'var(--border)' },
 };
 
 export default function MyTipsPage() {
@@ -39,40 +40,45 @@ export default function MyTipsPage() {
       )}
 
       {loading && <p style={{ color: 'var(--text-muted)' }}>Loading…</p>}
-
       {!loading && tips.length === 0 && (
         <p style={{ color: 'var(--text-muted)' }}>No tips yet — head to Matches to submit your first tip!</p>
       )}
 
       {tips.map(tip => {
-        const style = tip.evaluated ? RESULT_STYLES[tip.result] || RESULT_STYLES.wrong : null;
+        const style = tip.evaluated ? (RESULT_STYLES[tip.result] || RESULT_STYLES.wrong) : null;
+        const matchLabel = tip.homeTeam && tip.awayTeam
+          ? `${tip.homeTeam} vs ${tip.awayTeam}`
+          : `Match #${tip.fixtureId}`;
+
         return (
-          <div key={tip.id} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1rem 1.25rem', marginBottom: 10 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: tip.evaluated ? 10 : 0 }}>
-              <div style={{ flex: 1, fontSize: 14 }}>
-                <span style={{ fontWeight: 500 }}>Match #{tip.fixtureId}</span>
-                <span style={{ color: 'var(--text-muted)', fontSize: 12, marginLeft: 8 }}>
-                  {new Date(tip.submittedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                </span>
+          <div key={tip.id} style={{ background: 'var(--surface)', border: `1px solid ${style ? style.color : 'var(--border)'}`, borderRadius: 'var(--radius-lg)', padding: '1rem 1.25rem', marginBottom: 10 }}>
+
+            <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 10 }}>{matchLabel}</div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 3 }}>My tip</div>
+                <div style={{ fontSize: 20, fontWeight: 700 }}>{tip.scoreHome} : {tip.scoreAway}</div>
               </div>
-              <div style={{ fontSize: 18, fontWeight: 600 }}>
-                {tip.scoreHome} : {tip.scoreAway}
-              </div>
+
+              {tip.evaluated && (
+                <>
+                  <div style={{ flex: 1, textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 3 }}>Result</div>
+                    <div style={{ fontSize: 20, fontWeight: 700 }}>{tip.actualHome} : {tip.actualAway}</div>
+                  </div>
+                  <div style={{ flex: 1, textAlign: 'right' }}>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 3 }}>Points</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: style.color }}>+{tip.points}</div>
+                    <div style={{ fontSize: 11, color: style.color, marginTop: 2 }}>{style.label}</div>
+                  </div>
+                </>
+              )}
+
+              {!tip.evaluated && (
+                <div style={{ fontSize: 12, color: 'var(--text-hint)' }}>⏳ Waiting for result…</div>
+              )}
             </div>
-
-            {tip.evaluated && (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 10, borderTop: '1px solid var(--border)' }}>
-                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                  Result: <strong>{tip.actualHome} : {tip.actualAway}</strong>
-                </span>
-                <span style={{ fontSize: 12, fontWeight: 500, color: style.color }}>{style.label}</span>
-                <span style={{ fontSize: 13, fontWeight: 500, padding: '4px 10px', borderRadius: 4, background: style.bg, color: style.color }}>{style.pts}</span>
-              </div>
-            )}
-
-            {!tip.evaluated && (
-              <div style={{ fontSize: 12, color: 'var(--text-hint)', marginTop: 4 }}>⏳ Waiting for result…</div>
-            )}
           </div>
         );
       })}

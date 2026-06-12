@@ -8,7 +8,7 @@ const router = express.Router();
 // POST /api/tips — submit or update a tip
 // Body: { fixtureId, scoreHome, scoreAway }
 router.post('/', requireAuth, async (req, res) => {
-  const { fixtureId, scoreHome, scoreAway } = req.body;
+  const { fixtureId, scoreHome, scoreAway, homeTeam, awayTeam } = req.body;
   const userId = req.user.uid;
 
   if (fixtureId === undefined || scoreHome === undefined || scoreAway === undefined) {
@@ -39,6 +39,8 @@ router.post('/', requireAuth, async (req, res) => {
     fixtureId: Number(fixtureId),
     scoreHome: Number(scoreHome),
     scoreAway: Number(scoreAway),
+    homeTeam: homeTeam || '',
+    awayTeam: awayTeam || '',
     tendency: getTendency(Number(scoreHome), Number(scoreAway)),
     evaluated: false,
     points: null,

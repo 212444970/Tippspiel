@@ -50,7 +50,7 @@ export default function MatchCard({ match, existingTip, onTipSaved }) {
     setSaving(true);
     setError('');
     try {
-      await api.submitTip(match.id, Number(home), Number(away));
+      await api.submitTip(match.id, Number(home), Number(away), match.homeTeam.name, match.awayTeam.name);
       setSaved(true);
       onTipSaved?.();
     } catch (err) {

@@ -35,10 +35,10 @@ export const api = {
 
   getTipForFixture: (fixtureId) => apiFetch(`/api/tips/fixture/${fixtureId}`),
 
-  submitTip: (fixtureId, scoreHome, scoreAway) =>
+  submitTip: (fixtureId, scoreHome, scoreAway, homeTeam, awayTeam) =>
     apiFetch('/api/tips', {
       method: 'POST',
-      body: JSON.stringify({ fixtureId, scoreHome, scoreAway }),
+      body: JSON.stringify({ fixtureId, scoreHome, scoreAway, homeTeam, awayTeam }),
     }),
 
   getLeaderboard: () => apiFetch('/api/leaderboard'),
