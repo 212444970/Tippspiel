@@ -6,6 +6,7 @@ import { useAuth } from '../hooks/useAuth';
 const navItems = [
   { to: '/matches', label: '⚽ Matches' },
   { to: '/my-tips', label: '✏️ My tips' },
+  { to: '/all-tips', label: '👥 All tips' },
   { to: '/tournament', label: '🌍 Tournament' },
   { to: '/leaderboard', label: '🏆 Ranking' },
 ];

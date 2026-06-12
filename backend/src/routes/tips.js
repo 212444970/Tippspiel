@@ -68,6 +68,59 @@ router.get('/me', requireAuth, async (req, res) => {
   res.json({ tips });
 });
 
+// GET /api/tips/all — all evaluated tips grouped by fixture
+router.get('/all', requireAuth, async (req, res) => {
+  try {
+    const snap = await db.collection('tips').where('evaluated', '==', true).get();
+    const tips = snap.docs.map(d => {
+      const t = d.data();
+      return {
+        fixtureId: t.fixtureId,
+        homeTeam: t.homeTeam || '',
+        awayTeam: t.awayTeam || '',
+        actualHome: t.actualHome,
+        actualAway: t.actualAway,
+        scoreHome: t.scoreHome,
+        scoreAway: t.scoreAway,
+        points: t.points,
+        result: t.result,
+        displayName: t.userDisplayName || t.userEmail || 'Unknown',
+      };
+    });
+
+    // Group by fixtureId
+    const byFixture = {};
+    tips.forEach(t => {
+      if (!byFixture[t.fixtureId]) {
+        byFixture[t.fixtureId] = {
+          fixtureId: t.fixtureId,
+          homeTeam: t.homeTeam,
+          awayTeam: t.awayTeam,
+          actualHome: t.actualHome,
+          actualAway: t.actualAway,
+          tips: [],
+        };
+      }
+      byFixture[t.fixtureId].tips.push({
+        displayName: t.displayName,
+        scoreHome: t.scoreHome,
+        scoreAway: t.scoreAway,
+        points: t.points,
+        result: t.result,
+      });
+    });
+
+    // Sort tips within each match by points desc
+    Object.values(byFixture).forEach(f => {
+      f.tips.sort((a, b) => b.points - a.points);
+    });
+
+    res.json({ matches: Object.values(byFixture) });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch tips' });
+  }
+});
+
 // GET /api/tips/fixture/:fixtureId — get your tip for a specific match
 router.get('/fixture/:fixtureId', requireAuth, async (req, res) => {
   const tipId = `${req.user.uid}_${req.params.fixtureId}`;

@@ -32,6 +32,7 @@ export const api = {
   getRounds: () => apiFetch('/api/matches/rounds'),
 
   getMyTips: () => apiFetch('/api/tips/me'),
+  getAllTips: () => apiFetch('/api/tips/all'),
 
   getTipForFixture: (fixtureId) => apiFetch(`/api/tips/fixture/${fixtureId}`),
 
