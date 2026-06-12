@@ -71,12 +71,13 @@ export default function MatchCard({ match, existingTip, onTipSaved }) {
 
     let parts = [];
     if (result === 'exact') {
-      parts = ['Exact score · 7 pts'];
+      const exactPts = (actualHome + actualAway) <= 2 ? 6 : 7;
+      parts = [`Exact score · ${exactPts} pts`];
     } else if (result === 'wrong') {
       parts = ['Wrong · 0 pts'];
     } else {
       const tendencyCorrect = result === 'correct_winner';
-      if (tendencyCorrect) parts.push('Correct tendency · 4 pts');
+      if (tendencyCorrect) parts.push('Correct tendency · 3 pts');
       if (scoreHome === actualHome) parts.push('Home goal · +1 pt');
       else if (scoreAway === actualAway) parts.push('Away goal · +1 pt');
       else if ((scoreHome - scoreAway) === (actualHome - actualAway)) parts.push('Goal difference · +1 pt');

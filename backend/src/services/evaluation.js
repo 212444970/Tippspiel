@@ -2,7 +2,7 @@ const { db } = require('../firebase');
 const { getFixtures } = require('./football');
 
 const POINTS_EXACT = 7;
-const POINTS_TENDENCY = 4;
+const POINTS_TENDENCY = 3;
 const POINTS_GOAL = 1; // per team with correct goal count
 
 function getTendency(home, away) {
@@ -13,7 +13,8 @@ function getTendency(home, away) {
 
 function calcPoints(tipHome, tipAway, actualHome, actualAway) {
   if (tipHome === actualHome && tipAway === actualAway) {
-    return { points: POINTS_EXACT, result: 'exact' };
+    const points = (actualHome + actualAway) <= 2 ? 6 : POINTS_EXACT;
+    return { points, result: 'exact' };
   }
   const tendencyCorrect = getTendency(tipHome, tipAway) === getTendency(actualHome, actualAway);
   const homeGoal = tipHome === actualHome ? 1 : 0;
