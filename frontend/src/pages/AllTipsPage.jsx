@@ -8,12 +8,15 @@ const RESULT_COLOR = {
   wrong: 'var(--text-muted)',
 };
 
-const RESULT_LABEL = {
-  exact: 'Exact',
-  correct_winner: 'Tendency',
-  goal_bonus: 'Goal bonus',
-  wrong: 'Miss',
-};
+function resultLabel(tip, actualHome, actualAway) {
+  if (tip.result === 'exact') return 'Exact';
+  if (tip.result === 'wrong') return 'Miss';
+  const diff = (tip.scoreHome - tip.scoreAway) === (actualHome - actualAway);
+  const bonusLabel = diff ? 'Goal difference bonus' : 'One team goal bonus';
+  const hasBonus = tip.points > 3;
+  if (tip.result === 'correct_winner') return hasBonus ? `Tendency + ${bonusLabel}` : 'Tendency';
+  return bonusLabel;
+}
 
 export default function AllTipsPage() {
   const [matches, setMatches] = useState([]);
@@ -54,7 +57,7 @@ export default function AllTipsPage() {
                   <td style={{ padding: '8px 14px' }}>{tip.displayName}</td>
                   <td style={{ padding: '8px 14px', textAlign: 'center', fontWeight: 600 }}>{tip.scoreHome} : {tip.scoreAway}</td>
                   <td style={{ padding: '8px 14px', textAlign: 'center', color: RESULT_COLOR[tip.result] || 'var(--text-muted)' }}>
-                    {tip.result === 'correct_winner' && tip.points > 3 ? 'Tendency + goal bonus' : RESULT_LABEL[tip.result] || '—'}
+                    {resultLabel(tip, match.actualHome, match.actualAway)}
                   </td>
                   <td style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 600, color: RESULT_COLOR[tip.result] || 'var(--text-muted)' }}>
                     +{tip.points}

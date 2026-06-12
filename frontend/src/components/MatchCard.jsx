@@ -78,9 +78,9 @@ export default function MatchCard({ match, existingTip, onTipSaved }) {
     } else {
       const tendencyCorrect = result === 'correct_winner';
       if (tendencyCorrect) parts.push('Tendency · 3 pts');
-      if (scoreHome === actualHome) parts.push('Home goal · +1 pt');
-      else if (scoreAway === actualAway) parts.push('Away goal · +1 pt');
-      else if ((scoreHome - scoreAway) === (actualHome - actualAway)) parts.push('Goal difference · +1 pt');
+      if (scoreHome === actualHome) parts.push('One team goal bonus · +1 pt');
+      else if (scoreAway === actualAway) parts.push('One team goal bonus · +1 pt');
+      else if ((scoreHome - scoreAway) === (actualHome - actualAway)) parts.push('Goal difference bonus · +1 pt');
     }
 
     return (

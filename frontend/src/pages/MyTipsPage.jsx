@@ -48,7 +48,14 @@ export default function MyTipsPage() {
         const baseStyle = tip.evaluated ? (RESULT_STYLES[tip.result] || RESULT_STYLES.wrong) : null;
         const style = baseStyle ? {
           ...baseStyle,
-          label: tip.result === 'correct_winner' && tip.points > 3 ? 'Tendency + goal bonus' : baseStyle.label,
+          label: (() => {
+            if (!tip.evaluated || tip.result === 'wrong') return baseStyle.label;
+            if (tip.result === 'exact') return 'Exact';
+            const diff = (tip.scoreHome - tip.scoreAway) === (tip.actualHome - tip.actualAway);
+            const bonusLabel = diff ? 'Goal difference bonus' : 'One team goal bonus';
+            if (tip.result === 'correct_winner') return tip.points > 3 ? `Tendency + ${bonusLabel}` : 'Tendency';
+            return bonusLabel;
+          })(),
         } : null;
         const matchLabel = tip.homeTeam && tip.awayTeam
           ? `${tip.homeTeam} vs ${tip.awayTeam}`
