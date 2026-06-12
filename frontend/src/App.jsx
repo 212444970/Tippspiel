@@ -7,6 +7,7 @@ import MatchesPage from './pages/MatchesPage';
 import MyTipsPage from './pages/MyTipsPage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import TournamentPage from './pages/TournamentPage';
+import ProfilePage from './pages/ProfilePage';
 
 function RequireAuth({ children }) {
   const user = useAuth();
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="matches" element={<MatchesPage />} />
         <Route path="my-tips" element={<MyTipsPage />} />
         <Route path="tournament" element={<TournamentPage />} />
+        <Route path="profile" element={<ProfilePage />} />
         <Route path="leaderboard" element={<LeaderboardPage />} />
       </Route>
     </Routes>

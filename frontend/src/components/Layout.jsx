@@ -1,4 +1,4 @@
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import { useAuth } from '../hooks/useAuth';
@@ -33,7 +33,7 @@ export default function Layout() {
           <div style={{ fontWeight: 600, fontSize: 17, flex: 1 }}>
             ⚽ Tippspiel <span style={{ fontWeight: 400, fontSize: 13, color: 'var(--text-muted)' }}>WC 2026</span>
           </div>
-          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{user?.email}</span>
+          <Link to="/profile" style={{ fontSize: 13, color: 'var(--text-muted)', textDecoration: 'none' }}>{user?.email}</Link>
           <button onClick={handleLogout} style={{
             fontSize: 13,
             padding: '5px 12px',
