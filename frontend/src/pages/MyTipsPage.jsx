@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 
 const RESULT_STYLES = {
-  exact:          { label: 'Exact score',       color: 'var(--success)',    bg: 'var(--success-bg)' },
-  correct_winner: { label: 'Correct tendency',  color: 'var(--accent)',     bg: 'var(--accent-bg)' },
-  goal_bonus:     { label: 'Goal bonus',         color: 'var(--warning)',    bg: 'var(--warning-bg)' },
-  wrong:          { label: 'Wrong',             color: 'var(--text-muted)', bg: 'var(--border)' },
+  exact:          { label: 'Exact',                    color: 'var(--success)',    bg: 'var(--success-bg)' },
+  correct_winner: { label: 'Tendency',                 color: 'var(--accent)',     bg: 'var(--accent-bg)' },
+  goal_bonus:     { label: 'Goal bonus',               color: 'var(--warning)',    bg: 'var(--warning-bg)' },
+  wrong:          { label: 'Miss',                     color: 'var(--text-muted)', bg: 'var(--border)' },
 };
 
 export default function MyTipsPage() {
@@ -45,7 +45,11 @@ export default function MyTipsPage() {
       )}
 
       {tips.map(tip => {
-        const style = tip.evaluated ? (RESULT_STYLES[tip.result] || RESULT_STYLES.wrong) : null;
+        const baseStyle = tip.evaluated ? (RESULT_STYLES[tip.result] || RESULT_STYLES.wrong) : null;
+        const style = baseStyle ? {
+          ...baseStyle,
+          label: tip.result === 'correct_winner' && tip.points > 3 ? 'Tendency + goal bonus' : baseStyle.label,
+        } : null;
         const matchLabel = tip.homeTeam && tip.awayTeam
           ? `${tip.homeTeam} vs ${tip.awayTeam}`
           : `Match #${tip.fixtureId}`;

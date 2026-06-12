@@ -11,8 +11,8 @@ const RESULT_COLOR = {
 const RESULT_LABEL = {
   exact: 'Exact',
   correct_winner: 'Tendency',
-  goal_bonus: 'Bonus',
-  wrong: 'Wrong',
+  goal_bonus: 'Goal bonus',
+  wrong: 'Miss',
 };
 
 export default function AllTipsPage() {
@@ -54,7 +54,7 @@ export default function AllTipsPage() {
                   <td style={{ padding: '8px 14px' }}>{tip.displayName}</td>
                   <td style={{ padding: '8px 14px', textAlign: 'center', fontWeight: 600 }}>{tip.scoreHome} : {tip.scoreAway}</td>
                   <td style={{ padding: '8px 14px', textAlign: 'center', color: RESULT_COLOR[tip.result] || 'var(--text-muted)' }}>
-                    {RESULT_LABEL[tip.result] || '—'}
+                    {tip.result === 'correct_winner' && tip.points > 3 ? 'Tendency + goal bonus' : RESULT_LABEL[tip.result] || '—'}
                   </td>
                   <td style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 600, color: RESULT_COLOR[tip.result] || 'var(--text-muted)' }}>
                     +{tip.points}
