@@ -15,6 +15,33 @@ router.post('/', async (req, res) => {
   }
 });
 
+// POST /api/evaluate/reset — reset all evaluated tips and user points, then re-evaluate
+router.post('/reset', async (req, res) => {
+  try {
+    const tipsSnap = await db.collection('tips').where('evaluated', '==', true).get();
+    const usersSnap = await db.collection('users').get();
+
+    const batch = db.batch();
+
+    // Reset all evaluated tips
+    tipsSnap.docs.forEach(doc => {
+      batch.update(doc.ref, { evaluated: false, points: null, result: null, actualHome: null, actualAway: null });
+    });
+
+    // Reset all user points
+    usersSnap.docs.forEach(doc => {
+      batch.update(doc.ref, { totalPoints: 0, tipsEvaluated: 0, exactScores: 0, correctWinners: 0 });
+    });
+
+    await batch.commit();
+    await evaluateFinishedMatches();
+    res.json({ success: true, reset: tipsSnap.size });
+  } catch (err) {
+    console.error('Reset error:', err.message);
+    res.status(500).json({ error: 'Reset failed' });
+  }
+});
+
 // POST /api/evaluate/backfill-teams — fill missing homeTeam/awayTeam on existing tips
 router.post('/backfill-teams', async (req, res) => {
   try {
