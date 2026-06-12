@@ -62,14 +62,33 @@ export default function MatchCard({ match, existingTip, onTipSaved }) {
 
   const resultBadge = () => {
     if (!existingTip?.evaluated) return null;
-    const map = {
-      exact: ['Exact score', 'var(--success)', 'var(--success-bg)'],
-      correct_winner: ['Correct tendency', 'var(--accent)', 'var(--accent-bg)'],
-      goal_bonus: ['Goal bonus', 'var(--warning)', 'var(--warning-bg)'],
-      wrong: ['Wrong', 'var(--text-muted)', 'var(--border)'],
-    };
-    const [label, color, bg] = map[existingTip.result] || map.wrong;
-    return <span style={{ fontSize: 12, padding: '3px 8px', borderRadius: 4, background: bg, color }}>{label} · {existingTip.points} pts</span>;
+    const { result, scoreHome, scoreAway, actualHome, actualAway } = existingTip;
+
+    const colorMap = { exact: 'var(--success)', correct_winner: 'var(--accent)', goal_bonus: 'var(--warning)', wrong: 'var(--text-muted)' };
+    const bgMap = { exact: 'var(--success-bg)', correct_winner: 'var(--accent-bg)', goal_bonus: 'var(--warning-bg)', wrong: 'var(--border)' };
+    const color = colorMap[result] || colorMap.wrong;
+    const bg = bgMap[result] || bgMap.wrong;
+
+    let parts = [];
+    if (result === 'exact') {
+      parts = ['Exact score · 7 pts'];
+    } else if (result === 'wrong') {
+      parts = ['Wrong · 0 pts'];
+    } else {
+      const tendencyCorrect = result === 'correct_winner';
+      if (tendencyCorrect) parts.push('Correct tendency · 4 pts');
+      if (scoreHome === actualHome) parts.push('Home goal · +1 pt');
+      else if (scoreAway === actualAway) parts.push('Away goal · +1 pt');
+      else if ((scoreHome - scoreAway) === (actualHome - actualAway)) parts.push('Goal difference · +1 pt');
+    }
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
+        {parts.map(p => (
+          <span key={p} style={{ fontSize: 12, padding: '2px 8px', borderRadius: 4, background: bg, color }}>{p}</span>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -102,7 +121,15 @@ export default function MatchCard({ match, existingTip, onTipSaved }) {
         </div>
       </div>
 
-      {resultBadge() && <div style={{ marginBottom: 10 }}>{resultBadge()}</div>}
+      {existingTip?.evaluated && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+            Your tip: <strong style={{ color: 'var(--text)' }}>{existingTip.scoreHome} : {existingTip.scoreAway}</strong>
+          </span>
+          {resultBadge()}
+        </div>
+      )}
+      {!existingTip?.evaluated && resultBadge() && <div style={{ marginBottom: 10 }}>{resultBadge()}</div>}
 
       {!finished && !locked && (
         <>

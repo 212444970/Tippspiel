@@ -16,9 +16,12 @@ function calcPoints(tipHome, tipAway, actualHome, actualAway) {
     return { points: POINTS_EXACT, result: 'exact' };
   }
   const tendencyCorrect = getTendency(tipHome, tipAway) === getTendency(actualHome, actualAway);
-  const goalBonus = (tipHome === actualHome ? 1 : 0) + (tipAway === actualAway ? 1 : 0);
-  const points = (tendencyCorrect ? POINTS_TENDENCY : 0) + goalBonus;
-  const result = tendencyCorrect ? 'correct_winner' : (goalBonus > 0 ? 'goal_bonus' : 'wrong');
+  const homeGoal = tipHome === actualHome ? 1 : 0;
+  const awayGoal = tipAway === actualAway ? 1 : 0;
+  const diffCorrect = (tipHome - tipAway) === (actualHome - actualAway) ? 1 : 0;
+  const bonus = homeGoal + awayGoal + diffCorrect;
+  const points = (tendencyCorrect ? POINTS_TENDENCY : 0) + bonus;
+  const result = points === 0 ? 'wrong' : tendencyCorrect ? 'correct_winner' : 'goal_bonus';
   return { points, result };
 }
 
