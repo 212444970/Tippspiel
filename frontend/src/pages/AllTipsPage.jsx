@@ -38,7 +38,10 @@ export default function AllTipsPage() {
       {matches.map(match => (
         <div key={match.fixtureId} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', marginBottom: 12, overflow: 'hidden' }}>
           <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontWeight: 600, fontSize: 15 }}>{match.homeTeam} vs {match.awayTeam}</span>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: 15 }}>{match.homeTeam} vs {match.awayTeam}</div>
+              {match.date && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{new Date(match.date).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>}
+            </div>
             <span style={{ fontWeight: 700, fontSize: 16 }}>{match.actualHome} : {match.actualAway}</span>
           </div>
 

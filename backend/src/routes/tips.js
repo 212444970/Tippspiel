@@ -71,7 +71,15 @@ router.get('/me', requireAuth, async (req, res) => {
 // GET /api/tips/all — all evaluated tips grouped by fixture
 router.get('/all', requireAuth, async (req, res) => {
   try {
-    const snap = await db.collection('tips').where('evaluated', '==', true).get();
+    const { getFixtures } = require('../services/football');
+    const [snap, allFixtures] = await Promise.all([
+      db.collection('tips').where('evaluated', '==', true).get(),
+      getFixtures(),
+    ]);
+
+    const fixtureMap = {};
+    allFixtures.forEach(f => { fixtureMap[f.id] = f; });
+
     const tips = snap.docs.map(d => {
       const t = d.data();
       return {
@@ -92,12 +100,14 @@ router.get('/all', requireAuth, async (req, res) => {
     const byFixture = {};
     tips.forEach(t => {
       if (!byFixture[t.fixtureId]) {
+        const fixture = fixtureMap[t.fixtureId];
         byFixture[t.fixtureId] = {
           fixtureId: t.fixtureId,
           homeTeam: t.homeTeam,
           awayTeam: t.awayTeam,
           actualHome: t.actualHome,
           actualAway: t.actualAway,
+          date: fixture?.date || null,
           tips: [],
         };
       }
@@ -115,7 +125,10 @@ router.get('/all', requireAuth, async (req, res) => {
       f.tips.sort((a, b) => b.points - a.points);
     });
 
-    res.json({ matches: Object.values(byFixture) });
+    const matches = Object.values(byFixture)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    res.json({ matches });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch tips' });
   }
