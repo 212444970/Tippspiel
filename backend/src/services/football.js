@@ -45,8 +45,9 @@ function mapMatch(m) {
       logo: m.awayTeam.crest,
     },
     score: {
-      home: m.score.fullTime.home,
-      away: m.score.fullTime.away,
+      // Always use regular time (90 min) score for evaluation — not ET or penalties
+      home: m.score.regularTime?.home ?? m.score.fullTime.home,
+      away: m.score.regularTime?.away ?? m.score.fullTime.away,
     },
   };
 }
