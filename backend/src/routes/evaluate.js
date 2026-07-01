@@ -42,6 +42,20 @@ router.post('/reset', async (req, res) => {
   }
 });
 
+// GET /api/evaluate/debug-fixture/:id — see raw score fields for a fixture
+router.get('/debug-fixture/:id', async (req, res) => {
+  try {
+    const axios = require('axios');
+    const result = await axios.get(`https://api.football-data.org/v4/matches/${req.params.id}`, {
+      headers: { 'X-Auth-Token': process.env.FOOTBALL_DATA_KEY },
+    });
+    const m = result.data;
+    res.json({ status: m.status, score: m.score });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // POST /api/evaluate/backfill-teams — fill missing homeTeam/awayTeam on existing tips
 router.post('/backfill-teams', async (req, res) => {
   try {
