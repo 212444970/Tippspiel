@@ -6,6 +6,39 @@ const router = express.Router();
 
 const DEADLINE = new Date('2026-06-18T00:00:00Z');
 
+// GET /api/tournament/all — all tournament tips (authenticated)
+router.get('/all', requireAuth, async (req, res) => {
+  try {
+    const snap = await db.collection('tournamentTips').get();
+    const tips = snap.docs.map(doc => {
+      const d = doc.data();
+      return {
+        userId: d.userId,
+        pick1: d.pick1,
+        pick2: d.pick2,
+        pick3: d.pick3,
+        evaluated: d.evaluated || false,
+        points: d.points || 0,
+        pts1: d.pts1 || 0,
+        pts2: d.pts2 || 0,
+        pts3: d.pts3 || 0,
+      };
+    });
+
+    // Fetch display names from users collection
+    const usersSnap = await db.collection('users').get();
+    const nameMap = {};
+    usersSnap.docs.forEach(d => { nameMap[d.id] = d.data().displayName || d.data().email || 'Unknown'; });
+
+    const result = tips.map(t => ({ ...t, displayName: nameMap[t.userId] || 'Unknown' }));
+    result.sort((a, b) => b.points - a.points);
+
+    res.json({ tips: result });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch tournament tips' });
+  }
+});
+
 // GET /api/tournament/me
 router.get('/me', requireAuth, async (req, res) => {
   try {

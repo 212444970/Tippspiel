@@ -47,6 +47,7 @@ export const api = {
   updateDisplayName: (displayName) =>
     apiFetch('/api/profile/display-name', { method: 'POST', body: JSON.stringify({ displayName }) }),
 
+  getAllTournamentTips: () => apiFetch('/api/tournament/all'),
   getTournamentTip: () => apiFetch('/api/tournament/me'),
   submitTournamentTip: (pick1, pick2, pick3) =>
     apiFetch('/api/tournament', { method: 'POST', body: JSON.stringify({ pick1, pick2, pick3 }) }),
